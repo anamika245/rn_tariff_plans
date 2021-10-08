@@ -5,25 +5,12 @@ import {
   TextInput,
   Image,
   PixelRatio,
-  useWindowDimensions,
   View,
 } from 'react-native';
-import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
+import {SceneMap} from 'react-native-tab-view';
 import TariffCard from '../components/TariffCard';
 import {bestTariffs, specialTariffs, popularTariffs, topup} from '../data/data';
-
-const renderTabBar = props => (
-  <TabBar
-    {...props}
-    indicatorStyle={{backgroundColor: '#F1800D'}}
-    style={{backgroundColor: '#ffffff'}}
-    activeColor={'rgba(38, 50, 56, 0.9)'}
-    inactiveColor={'rgba(38, 50, 56, 0.4)'}
-    scrollEnabled={true}
-    labelStyle={{fontSize: 12}}
-    tabStyle={{width: 'auto'}}
-  />
-);
+import Tab from '../components/Tab';
 
 const TariffCardContainer = tariffs => (
   <View style={{flex: 1, backgroundColor: '#ffffff'}}>
@@ -44,21 +31,15 @@ const renderScene = SceneMap({
   fourth: () => TariffCardContainer(topup),
 });
 
-const SearchTextInput = props => {
-  return <TextInput {...props} editable maxLength={40} />;
-};
-
 const Home = () => {
-  const layout = useWindowDimensions();
-  const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'first', title: 'Best Offers for you'},
     {key: 'second', title: 'Special Recharge'},
     {key: 'third', title: 'Popular'},
     {key: 'fourth', title: 'Topup'},
   ]);
-  const [value, onChangeText] = useState('Search Plan Amount, Talktime');
-  console.log('Layout', layout);
+  const [value, onChangeText] = useState();
+
   return (
     <View style={styles.container}>
       <View style={styles.twoColHeading}>
@@ -75,27 +56,23 @@ const Home = () => {
           borderBottomColor: 'rgba(38, 50, 56, 0.1)',
           borderBottomWidth: 1,
         }}>
-        <SearchTextInput
-          multiline
-          numberOfLines={1}
-          value={value}
-          onChangeText={text => onChangeText(text)}
-          style={{padding: 5}}
-        />
+        <View style={styles.searchInputStyle}>
+          <TextInput
+            placeholder="Search Plan Amount, Talktime"
+            numberOfLines={1}
+            value={value}
+            onChangeText={text => onChangeText(text)}
+            style={{padding: 5}}
+          />
+
+          <Image
+            style={styles.searchIconStyle}
+            source={require('../../assets/searchIcon.png')}
+          />
+        </View>
       </View>
       <View style={styles.cardSeparator}></View>
-      <TabView
-        navigationState={{index, routes}}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{width: 200}}
-        overScrollMode={true}
-        renderTabBar={renderTabBar}
-        style={{
-          marginRight: PixelRatio.roundToNearestPixel(-38),
-          marginLeft: PixelRatio.roundToNearestPixel(-38),
-        }}
-      />
+      <Tab routes={routes} renderScene={renderScene} />
       <View style={styles.cardSeparator}></View>
     </View>
   );
@@ -125,6 +102,14 @@ const styles = StyleSheet.create({
   col2: {
     width: '10%',
     justifyContent: 'flex-start',
+  },
+  searchInputStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  searchIconStyle: {
+    marginTop: 10,
+    marginLeft: 120,
   },
   subHeading: {
     color: 'rgba(38, 50, 56, 0.7)',
